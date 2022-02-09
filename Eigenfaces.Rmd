@@ -1,0 +1,73 @@
+---
+title: "EigenfacesR"
+output: html_document
+---
+
+
+
+## R Markdown
+
+```{r setup, include=FALSE}
+library(jpeg)
+setwd("D:/Ivan/Tesis/Eigenfaces/CH01")
+dog<-readJPEG("dog.jpg")
+img<-writeJPEG(dog)
+
+library(magick)
+setwd("D:/Ivan/Tesis/Eigenfaces/CH01")
+current_image<-image_read("dog.jpg")
+image_vector<-as.numeric(current_image[[1]][1, , ])
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r setup, include=FALSE}
+t <- proc.time()   # Inicia el cronómetro
+
+library(magick)    #cargamos la librería para la lectura y manipilación de imagenes
+matriz_caras<-NULL #En esta matriz se guardarán las imagenes en vectores columna 
+
+for (i in list.files(path="D:/Ivan/Tesis/EigenfacesR/Caras", full.names = TRUE)) {
+  imagen<-image_read(i)                           #lectura de la imagen
+  imagen_vector<-as.numeric(imagen[[1]][1, , ])   #guardamos los valores de la escala de grises en un vector por cada imagen
+  matriz_caras<-rbind(matriz_caras,imagen_vector) #agrupamos el vector resultante en la matriz declarada previamente
+}
+
+
+t <- proc.time()   # Inicia el cronómetro
+library(magick)    
+
+```
+
+
+
+
+
+
+```{r}
+#find rows & columns of matrix
+#preallocate
+#build matrix 
+
+files <- list.files(path="D:/Ivan/Tesis/EigenfacesR/Caras", full.names = TRUE)
+images <- lapply(files, FUN=image_read)
+image_vecs <- lapply(images,FUN=function(x) { as.numeric(x[[1]][1, ,])})
+faces <- matrix(unlist(image_vecs),nrow=length(image_vecs[[1]]))
+faces <- t(faces)                                                                                              
+write.table(faces, file="res2", row.names=FALSE, col.names=FALSE)
+
+proc.time()-t    # Detiene el cronómetro
+
+v1<-faces[16,]
+imagen1<-(matrix(v1,192,168,byrow = TRUE))
+imagen1  %>%  image_flop
+image(x=1:192,y=1:168,z=imagen1,col = gray.colors(100))
+
+```
+
+
+
+
+
